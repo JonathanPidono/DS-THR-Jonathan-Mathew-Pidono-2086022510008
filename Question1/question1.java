@@ -1,6 +1,6 @@
 package Question1;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Scanner;
 import java.util.Stack;
@@ -39,97 +39,86 @@ public class question1 {
                 }
             }
 
-            int totalTime             = 0;
-            Queue<String> actionLog   = new LinkedList<>();
-            boolean[] onRight         = new boolean[aurorCount];
-            int leftCount             = aurorCount;
-            boolean timeLimitHit      = false;
+            int totalTime                = 0;
+            Queue<String> actionLog      = new ArrayDeque<>();
+            boolean[] crossedToRight     = new boolean[aurorCount];
+            int leftCount                = aurorCount;
+            boolean acromantulaCaught    = false;
 
-            while (leftCount > 3 && !timeLimitHit) {
+            while (leftCount > 3 && !acromantulaCaught) {
                 int costStrategyA = crossTime[0] + crossTime[0] + crossTime[leftCount - 2] + crossTime[leftCount - 1];
                 int costStrategyB = crossTime[1] + crossTime[0] + crossTime[leftCount - 1] + crossTime[1];
 
                 if (costStrategyB <= costStrategyA) {
                     actionLog.add(aurorId[0] + " " + aurorId[1] + " ->");
                     totalTime += crossTime[1];
-                    onRight[0] = true; onRight[1] = true;
+                    crossedToRight[0] = true; crossedToRight[1] = true;
 
-                    if (totalTime >= timeLimit) { timeLimitHit = true; break; }
-
+                    if (totalTime >= timeLimit) { acromantulaCaught = true; break; }
                     actionLog.add(aurorId[0] + " <-");
                     totalTime += crossTime[0];
-                    onRight[0] = false;
+                    crossedToRight[0] = false;
 
                     actionLog.add(aurorId[leftCount - 2] + " " + aurorId[leftCount - 1] + " ->");
                     totalTime += crossTime[leftCount - 1];
-                    onRight[leftCount - 2] = true; onRight[leftCount - 1] = true;
+                    crossedToRight[leftCount - 2] = true; crossedToRight[leftCount - 1] = true;
 
-                    if (totalTime >= timeLimit) {
-                        onRight[1] = false;
-                        timeLimitHit = true;
-                        break;
-                    }
-
+                    if (totalTime >= timeLimit) { acromantulaCaught = true; break; }
                     actionLog.add(aurorId[1] + " <-");
                     totalTime += crossTime[1];
-                    onRight[1] = false;
+                    crossedToRight[1] = false;
 
                 } else {
                     actionLog.add(aurorId[0] + " " + aurorId[leftCount - 1] + " ->");
                     totalTime += crossTime[leftCount - 1];
-                    onRight[0] = true; onRight[leftCount - 1] = true;
+                    crossedToRight[0] = true; crossedToRight[leftCount - 1] = true;
 
-                    if (totalTime >= timeLimit) { timeLimitHit = true; break; }
-
+                    if (totalTime >= timeLimit) { acromantulaCaught = true; break; }
                     actionLog.add(aurorId[0] + " <-");
                     totalTime += crossTime[0];
-                    onRight[0] = false;
+                    crossedToRight[0] = false;
 
                     actionLog.add(aurorId[0] + " " + aurorId[leftCount - 2] + " ->");
                     totalTime += crossTime[leftCount - 2];
-                    onRight[0] = true; onRight[leftCount - 2] = true;
+                    crossedToRight[0] = true; crossedToRight[leftCount - 2] = true;
 
-                    if (totalTime >= timeLimit) { timeLimitHit = true; break; }
-
+                    if (totalTime >= timeLimit) { acromantulaCaught = true; break; }
                     actionLog.add(aurorId[0] + " <-");
                     totalTime += crossTime[0];
-                    onRight[0] = false;
+                    crossedToRight[0] = false;
                 }
-
                 leftCount -= 2;
             }
 
-            if (!timeLimitHit) {
+            if (!acromantulaCaught) {
                 if (leftCount == 3) {
                     actionLog.add(aurorId[0] + " " + aurorId[1] + " ->");
                     totalTime += crossTime[1];
-                    onRight[0] = true; onRight[1] = true;
+                    crossedToRight[0] = true; crossedToRight[1] = true;
 
                     if (totalTime < timeLimit) {
                         actionLog.add(aurorId[0] + " <-");
                         totalTime += crossTime[0];
-                        onRight[0] = false;
+                        crossedToRight[0] = false;
 
                         actionLog.add(aurorId[0] + " " + aurorId[2] + " ->");
                         totalTime += crossTime[2];
-                        onRight[0] = true; onRight[2] = true;
-
-                        if (totalTime >= timeLimit) timeLimitHit = true;
+                        crossedToRight[0] = true; crossedToRight[2] = true;
                     } else {
-                        timeLimitHit = true;
+                        acromantulaCaught = true;
                     }
 
                 } else if (leftCount == 2) {
                     actionLog.add(aurorId[0] + " " + aurorId[1] + " ->");
                     totalTime += crossTime[1];
-                    onRight[0] = true; onRight[1] = true;
-                    if (totalTime >= timeLimit) timeLimitHit = true;
+                    crossedToRight[0] = true; crossedToRight[1] = true;
+                    if (totalTime >= timeLimit) acromantulaCaught = true;
 
                 } else if (leftCount == 1) {
                     actionLog.add(aurorId[0] + " ->");
                     totalTime += crossTime[0];
-                    onRight[0] = true;
-                    if (totalTime >= timeLimit) timeLimitHit = true;
+                    crossedToRight[0] = true;
+                    if (totalTime >= timeLimit) acromantulaCaught = true;
                 }
             }
 
@@ -139,7 +128,7 @@ public class question1 {
 
             Stack<Integer> nonSurvivors = new Stack<>();
             for (int i = aurorCount - 1; i >= 0; i--) {
-                if (!onRight[i]) {
+                if (!crossedToRight[i]) {
                     nonSurvivors.push(aurorId[i]);
                 }
             }
