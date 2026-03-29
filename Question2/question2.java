@@ -24,46 +24,57 @@ public class question2 {
         }
 
         long result = 0;
-        String pendingOp = null;
-        String pendingNum = null;
+        boolean hasResult = false;
+        String pendingNum = ""; // akumulasi angka dari iterasi yang semua-angka
 
         while (!queue.isEmpty() || !stack.isEmpty()) {
-            String fromQueue = queue.isEmpty() ? null : queue.poll();
             String fromStack = stack.isEmpty() ? null : stack.pop();
+            String fromQueue = queue.isEmpty() ? null : queue.poll();
 
-            String[] pair = {fromQueue, fromStack};
-            for (int i = 0; i < pair.length; i++) {
-                String token = pair[i];
-                if (token == null) continue;
+            String iterNum  = null; 
+            String iterOp   = null; 
+            String iterNum2 = null; 
 
-                if (!isOperator(token)) {
-                    if (pendingNum != null) {
-                        pendingNum = pendingNum + token;
-                    } else {
-                        pendingNum = token;
-                    }
+            for (String t : new String[]{fromStack, fromQueue}) {
+                if (t == null) continue;
+                if (isOperator(t)) {
+                    iterOp = t;
+                } else if (iterNum == null) {
+                    iterNum = t;
                 } else {
-                    if (pendingNum != null) {
-                        long num = Long.parseLong(pendingNum);
-                        if (pendingOp == null) {
-                            result = num;
-                        } else {
-                            result = applyOperation(result, pendingOp, num);
-                        }
-                        pendingNum = null;
+                    iterNum2 = t;
+                }
+            }
+
+            if (iterOp == null) {
+                // Iterasi ini hanya berisi angka → gabungkan ke pendingNum
+                if (iterNum  != null) pendingNum += iterNum;
+                if (iterNum2 != null) pendingNum += iterNum2;
+
+            } else {
+                if (!pendingNum.isEmpty()) {
+                    long leftNum = Long.parseLong(pendingNum);
+                    pendingNum = "";
+                    if (!hasResult) {
+                        result = leftNum;
+                        hasResult = true;
                     }
-                    pendingOp = token;
+                }
+
+                if (iterNum != null) {
+                    long rightNum = Long.parseLong(iterNum);
+                    if (!hasResult) {
+                        result = rightNum;
+                        hasResult = true;
+                    } else {
+                        result = applyOperation(result, iterOp, rightNum);
+                    }
                 }
             }
         }
 
-        if (pendingNum != null) {
-            long num = Long.parseLong(pendingNum);
-            if (pendingOp == null) {
-                result = num;
-            } else {
-                result = applyOperation(result, pendingOp, num);
-            }
+        if (!pendingNum.isEmpty()) {
+            result = Long.parseLong(pendingNum);
         }
 
         System.out.println(result);

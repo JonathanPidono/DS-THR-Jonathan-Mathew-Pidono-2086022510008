@@ -24,6 +24,8 @@ public class question1 {
 
         Bridge bridge = new Bridge();
         bridge.solve(aurorCount, timeLimit, crossTime, aurorId);
+
+        scanner.close();
     }
 
     static public class Bridge {
