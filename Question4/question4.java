@@ -8,7 +8,7 @@ public class question4 {
         Scanner scanner = new Scanner(System.in);
 
         String input = scanner.nextLine();
-
+        System.out.println();
         CardPile pile = new CardPile();
         pile.processCards(input);
         pile.displayStacks();
